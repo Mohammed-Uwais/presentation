@@ -16,6 +16,7 @@
       --border: #1F2937;
       --accent: #00E5FF;
       --accent-hover: #38BDF8;
+      --emerald: #34D399;
       --text: #F3F4F6;
       --text-muted: #9CA3AF;
     }
@@ -29,13 +30,13 @@
     body {
       background: var(--bg);
       color: var(--text);
-      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: space-between;
-      padding: 16px 20px 24px;
+      padding: 14px 20px 20px;
       user-select: none;
     }
 
@@ -52,12 +53,14 @@
       border: 1px solid var(--border);
       border-radius: 12px;
       margin-bottom: 12px;
+      gap: 12px;
+      flex-wrap: wrap;
     }
 
     .title-group {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
     }
 
     .badge-icon {
@@ -71,16 +74,60 @@
     }
 
     .file-name {
-      font-size: 14px;
+      font-size: 13.5px;
       font-weight: 700;
       color: #FFFFFF;
       letter-spacing: -0.01em;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .file-status {
+      font-size: 11px;
+      background: rgba(52, 211, 153, 0.15);
+      border: 1px solid var(--emerald);
+      color: var(--emerald);
+      padding: 2px 7px;
+      border-radius: 999px;
+      font-weight: 700;
+    }
+
+    /* View Mode Switcher */
+    .view-switcher {
+      display: flex;
+      background: #0D131F;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 3px;
+      gap: 4px;
+    }
+
+    .mode-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .mode-btn.active {
+      background: #1F2937;
+      color: var(--accent);
+      box-shadow: 0 0 10px rgba(0, 229, 255, 0.2);
     }
 
     .header-actions {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
     }
 
     .counter-pill {
@@ -88,9 +135,9 @@
       border: 1px solid rgba(0, 229, 255, 0.3);
       color: var(--accent);
       font-family: 'JetBrains Mono', monospace;
-      font-size: 13px;
+      font-size: 12.5px;
       font-weight: 700;
-      padding: 5px 12px;
+      padding: 5px 10px;
       border-radius: 999px;
     }
 
@@ -98,7 +145,7 @@
       background: #1F2937;
       border: 1px solid #374151;
       color: var(--text);
-      padding: 6px 14px;
+      padding: 6px 12px;
       border-radius: 8px;
       font-size: 12px;
       font-weight: 600;
@@ -114,6 +161,18 @@
       background: #374151;
       color: var(--accent);
       border-color: var(--accent);
+    }
+
+    .btn-download {
+      background: rgba(52, 211, 153, 0.15);
+      border-color: rgba(52, 211, 153, 0.4);
+      color: var(--emerald);
+    }
+
+    .btn-download:hover {
+      background: var(--emerald);
+      color: #090D16;
+      border-color: var(--emerald);
     }
 
     /* Main Presentation Slide Viewport */
@@ -132,6 +191,7 @@
       box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.8), 0 0 40px rgba(0, 229, 255, 0.08);
     }
 
+    /* Deck View (Exact Slides) */
     .slide-wrapper {
       width: 100%;
       height: 100%;
@@ -145,13 +205,33 @@
       height: 100%;
       object-fit: contain;
       opacity: 0;
-      transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s ease;
+      transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1);
       pointer-events: none;
     }
 
     .slide-img.active {
       opacity: 1;
       pointer-events: auto;
+    }
+
+    /* PowerPoint Web Embed View */
+    .embed-wrapper {
+      width: 100%;
+      height: 100%;
+      display: none;
+      background: #111;
+      position: absolute;
+      inset: 0;
+    }
+
+    .embed-wrapper.active {
+      display: block;
+    }
+
+    .embed-iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
     }
 
     /* Floating Arrow Direction Buttons */
@@ -292,7 +372,20 @@
   <header>
     <div class="title-group">
       <span class="badge-icon">PPTX</span>
-      <span class="file-name">Deep_Learning_Image_Deblurring_Seminar.pptx</span>
+      <div class="file-name">
+        <span>Deep_Learning_Image_Deblurring_Seminar.pptx</span>
+        <span class="file-status">✓ Uploaded & Live</span>
+      </div>
+    </div>
+
+    <!-- Mode Switcher -->
+    <div class="view-switcher">
+      <button class="mode-btn active" id="modeSlides" onclick="switchMode('slides')">
+        <span>🖼️</span> HD Slide Deck
+      </button>
+      <button class="mode-btn" id="modeOffice" onclick="switchMode('office')">
+        <span>📊</span> PowerPoint Web Player
+      </button>
     </div>
 
     <div class="header-actions">
@@ -300,8 +393,8 @@
       <button class="btn-top" id="btnFullscreen" title="Toggle Fullscreen (F)">
         <span>⛶</span> Fullscreen
       </button>
-      <a class="btn-top" href="Deep_Learning_Image_Deblurring_Seminar.pptx" download title="Download Original PowerPoint Presentation">
-        <span>📥</span> Download PPT
+      <a class="btn-top btn-download" href="Deep_Learning_Image_Deblurring_Seminar.pptx" download title="Download the original PowerPoint PPTX file">
+        <span>📥</span> Download PPTX
       </a>
     </div>
   </header>
@@ -311,7 +404,7 @@
     <!-- Left Previous Floating Button -->
     <button class="side-arrow prev" id="arrowPrev" title="Previous Slide (Left Arrow)">◀</button>
 
-    <!-- Slide Images (Exact 1920x1080 High-Res PowerPoint Exports) -->
+    <!-- Slide Images (Exact 1920x1080 Full HD PowerPoint Exports) -->
     <div class="slide-wrapper" id="slideWrapper">
       <img src="slides/slide_1.png" class="slide-img active" alt="Slide 1" id="slide-1">
       <img src="slides/slide_2.png" class="slide-img" alt="Slide 2" id="slide-2">
@@ -321,12 +414,17 @@
       <img src="slides/slide_6.png" class="slide-img" alt="Slide 6" id="slide-6">
     </div>
 
+    <!-- PowerPoint Web Embed View (Office Online Web Viewer) -->
+    <div class="embed-wrapper" id="embedWrapper">
+      <iframe class="embed-iframe" id="officeFrame" src="" title="PowerPoint Web Viewer"></iframe>
+    </div>
+
     <!-- Right Next Floating Button -->
     <button class="side-arrow next" id="arrowNext" title="Next Slide (Right Arrow / Space)">▶</button>
   </main>
 
   <!-- Bottom Navigation Direction Controls -->
-  <footer class="controls-bar">
+  <footer class="controls-bar" id="controlsBar">
     <button class="btn-nav" id="btnPrev">
       <span>◀</span> Previous
     </button>
@@ -349,6 +447,7 @@
   <script>
     const totalSlides = 6;
     let currentSlide = 1;
+    let currentViewMode = 'slides';
 
     // Elements
     const slideImages = document.querySelectorAll('.slide-img');
@@ -360,6 +459,40 @@
     const arrowNext = document.getElementById('arrowNext');
     const btnFullscreen = document.getElementById('btnFullscreen');
     const deckContainer = document.getElementById('deckContainer');
+    const slideWrapper = document.getElementById('slideWrapper');
+    const embedWrapper = document.getElementById('embedWrapper');
+    const officeFrame = document.getElementById('officeFrame');
+    const controlsBar = document.getElementById('controlsBar');
+
+    // GitHub Raw URL for the uploaded PPTX
+    const pptxRawUrl = 'https://raw.githubusercontent.com/Mohammed-Uwais/presentation/main/Deep_Learning_Image_Deblurring_Seminar.pptx';
+
+    function switchMode(mode) {
+      currentViewMode = mode;
+      document.getElementById('modeSlides').classList.toggle('active', mode === 'slides');
+      document.getElementById('modeOffice').classList.toggle('active', mode === 'office');
+
+      if (mode === 'office') {
+        slideWrapper.style.display = 'none';
+        embedWrapper.classList.add('active');
+        arrowPrev.style.display = 'none';
+        arrowNext.style.display = 'none';
+        controlsBar.style.display = 'none';
+        counterDisplay.style.display = 'none';
+
+        // Load Microsoft Office Live Web Viewer for the uploaded PPT
+        if (!officeFrame.src || officeFrame.src === 'about:blank') {
+          officeFrame.src = `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(pptxRawUrl)}`;
+        }
+      } else {
+        slideWrapper.style.display = 'block';
+        embedWrapper.classList.remove('active');
+        arrowPrev.style.display = 'flex';
+        arrowNext.style.display = 'flex';
+        controlsBar.style.display = 'flex';
+        counterDisplay.style.display = 'block';
+      }
+    }
 
     function updateSlideView() {
       // Toggle slide visibility
@@ -409,6 +542,7 @@
 
     // Keyboard Arrow Direction Navigation
     window.addEventListener('keydown', (e) => {
+      if (currentViewMode !== 'slides') return;
       switch (e.key) {
         case 'ArrowRight':
         case 'ArrowDown':
@@ -464,9 +598,9 @@
     deckContainer.addEventListener('touchend', (e) => {
       touchEndX = e.changedTouches[0].screenX;
       if (touchEndX < touchStartX - 50) {
-        nextSlide(); // Swipe left -> Next
+        nextSlide();
       } else if (touchEndX > touchStartX + 50) {
-        prevSlide(); // Swipe right -> Prev
+        prevSlide();
       }
     }, { passive: true });
 
